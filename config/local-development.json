@@ -1,0 +1,54 @@
+{
+  "dbConf": {
+    "mySQL": {
+      "host": "172.16.4.8",
+      "user": "userparser",
+      "password": "password_for_address1562",
+      "database": "address",
+      "connectionLimit": 10
+    },
+    "msSQL": {
+      "server": "172.16.2.4",
+      "user": "Parser_1562",
+      "password": "Parser_1562",
+      "database": "avr_vs_request",
+      "pool": {
+        "min": 1,
+        "idleTimeoutMillis": 100000
+      },
+      "options": {
+        "encrypt": false,
+        "trustServerCertificate": false
+      }
+    },
+    "Fb": {
+      "host": "172.16.2.4",
+      "port": 3050,
+      "database": "new",
+      "user": "SYSDBA",
+      "password": "sp_mfmk_",
+      "lowercase_keys": false,
+      "role": null,
+      "pageSize": 4096
+    }
+  },
+
+  "url": {
+    "mainUrl": "https://1562.kharkivrada.gov.ua/api/v1/appeal_KharkivVODA/get/json/",
+    "setUrl": "https://1562.kharkivrada.gov.ua/api/v1/appeal_KharkivVODA/set/json"
+  },
+  "proxy": { "protocol": "http", "host": "172.16.4.1", "port": 8080 },
+  "APIConf": {
+    "previousDays": 1,
+    "previousMinutes": 5,
+    "previousNewHours": 1,
+    "old": {
+      "startDaysBefore": 2,
+      "days": 2
+    }
+  },
+  "SelectConf": {
+    "previousDays": 1
+  },
+  "MAX_Count": 10
+}

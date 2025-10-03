@@ -1,0 +1,35 @@
+// Пример использования класса
+(async () => {
+  const options = {
+    host: '127.0.0.1',
+    port: 3050,
+    database: 'path/to/your/database.fdb',
+    user: 'SYSDBA',
+    password: 'masterkey',
+    lowercase_keys: false, // set to true to lowercase keys
+    role: null,            // default
+    pageSize: 4096         // default when creating database
+  };
+
+  const db = new FirebirdDB(options);
+
+  try {
+    await db.connect();
+
+    // Выполнение SELECT запроса
+    const selectResult = await db.executeSelect('SELECT * FROM your_table');
+    console.log('SELECT Result:', selectResult);
+
+    // Вызов хранимой процедуры
+    const procedureResult = await db.callProcedure('your_procedure', [param1, param2]);
+    console.log('Procedure Result:', procedureResult);
+
+    await db.disconnect();
+  } catch (error) {
+    console.error('Error:', error);
+  }
+})();
+
+ 2165308
+ 2165276
+ 2165309

@@ -1,0 +1,11 @@
+{
+  "name": "log_amalis",
+  "version": "1.0.0",
+  "description": "Выбираеи ID из лог файла закрывающего заявки",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

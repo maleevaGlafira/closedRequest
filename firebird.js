@@ -76,25 +76,54 @@ class FirebirdDB {
     }
   }
 
-  // Метод для выполнения запроса
-  async executeSelect(sql, params) {
+  // Приватный метод: выполняет callback с подключением из пула
+  async _withConnection(callback) {
+    let db = null;
+
+    try {
+      // Получаем соединение из пула (обёртка в Promise)
+      db = await new Promise((resolve, reject) => {
+        this.pool.get((err, connection) => {
+          if (err) {
+            this.isConnected = false;
+            reject(err);
+          } else {
+            resolve(connection);
+          }
+        });
+      });
+
+      // Выполняем переданный callback (например, запрос)
+      const result = await callback(db);
+      return result;
+    } catch (err) {
+      throw err; // Пробрасываем ошибку наверх
+    } finally {
+      // Гарантированно освобождаем соединение, даже если была ошибка
+      if (db) {
+        try {
+          db.detach();
+        } catch (e) {
+          this.logger.warn("Failed to detach DB connection:", e.message);
+        }
+      }
+    }
+  }
+  // Метод для SELECT-запросов
+  async executeSelect(sql, params = []) {
     this.logger.info(`${sql} ${JSON.stringify(params)}`);
     if (!this.isConnected) {
       await this.reconnect();
     }
+
     try {
-      return await new Promise((resolve, reject) => {
-        this.pool.get((err, db) => {
-          if (err) {
-            this.isConnected = false;
-            return reject(err);
-          }
-          db.query(sql, params, (errSel, result) => {
-            if (errSel) {
+      return await this._withConnection((db) => {
+        return new Promise((resolve, reject) => {
+          db.query(sql, params, (err, result) => {
+            if (err) {
               this.isConnected = false;
-              return reject(errSel);
+              return reject(err);
             }
-            db.detach();
             resolve(result);
           });
         });
@@ -105,25 +134,21 @@ class FirebirdDB {
     }
   }
 
-  // Метод для вставки данных
-  async insert(sql, params) {
+  // Метод для INSERT/UPDATE/DELETE
+  async insert(sql, params = []) {
     this.logger.info(`${sql} ${JSON.stringify(params)}`);
     if (!this.isConnected) {
       await this.reconnect();
     }
+
     try {
-      return await new Promise((resolve, reject) => {
-        this.pool.get((errGet, db) => {
-          if (err) {
-            this.isConnected = false;
-            return reject(errGet);
-          }
-          db.query(sql, params, (errIns, result) => {
+      return await this._withConnection((db) => {
+        return new Promise((resolve, reject) => {
+          db.query(sql, params, (err, result) => {
             if (err) {
               this.isConnected = false;
-              return reject(errIns);
+              return reject(err);
             }
-            db.detach();
             resolve(result);
           });
         });

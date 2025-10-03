@@ -14,15 +14,59 @@ class FirebirdDB {
     this.retryDelay = 30000; // Задержка 30 секунд для повторного подключения
   }
 
+  // Функция для проверки подключения
+  async testPoolConnection() {
+    let db;
+    try {
+      // Получаем соединение из пула
+      db = await new Promise((resolve, reject) => {
+        this.pool.get((err, connection) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(connection);
+          }
+        });
+      });
+
+      // Опционально: выполнить простой запрос (например, SELECT 1 FROM RDB$DATABASE)
+      const result = await new Promise((resolve, reject) => {
+        db.query("SELECT 1 FROM RDB$DATABASE", (err, res) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(res);
+          }
+        });
+      });
+
+      console.log("✅ Пул подключён и работает. Пример результата:", result);
+      this.isConnected = true;
+    } catch (error) {
+      console.error("❌ Ошибка подключения к БД через пул:", error.message);
+      this.isConnected = false;
+    } finally {
+      // Важно: вернуть соединение в пул!
+      if (db) {
+        db.detach(); // или db.release(), но в node-firebird используется detach()
+      }
+    }
+  }
+
   // Проверка и восстановление соединения
   async reconnect() {
     try {
-      if (this.pool) {
-        this.pool.destroy();
+      await this.testPoolConnection();
+      if (!this.isConnected) {
+        if (this.pool) {
+          this.pool.destroy();
+        }
+        this.pool = Firebird.pool(5, this.options);
+        this.pool.isConnected;
+        this.isConnected = true;
+        this.logger.info("Firebird pool reconnected");
+        return true;
       }
-      this.pool = Firebird.pool(5, this.options);
-      this.isConnected = true;
-      this.logger.info("Firebird pool reconnected");
       return true;
     } catch (err) {
       this.isConnected = false;

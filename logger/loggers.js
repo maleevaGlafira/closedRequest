@@ -19,7 +19,7 @@ class MyLogger {
       });
     };
 
-    if (!this.logger || currentDt.getDay() != this.dt.getDay()) {
+    if (!this.logger || currentDt.getDay() !== this.dt.getDay()) {
       const logLevels = {
         fatal: 0,
         error: 1,

@@ -15,13 +15,14 @@ const SqlSelect = {
     setReceived: "EXECUTE PROCEDURE READ_1562(?)",
   },
   MS: {
-    getSystem: `select[dbo].[fnWho_opened_from_id_request](?) name_system`,
-    getJob: `select id_connect FROM [dbo].[fnSelectJobs](?,'?');`,
+    getSystem: "select[dbo].[fnWho_opened_from_id_request](?) name_system",
+    getJob: "select id_connect FROM [dbo].[fnSelectJobs](?,'?');",
   },
 };
 const MAX_Count = config.MAX_Count;
 global.db = new FirebirdDB();
 global.con_mssql = new Con_MSSQL();
+const logger = createLocalLogger("main");
 
 async function PrePareFromMsSQL(ID_1562, ID_DAMAGEPLACE) {
   const system = await global.con_mssql.select(
@@ -32,7 +33,8 @@ async function PrePareFromMsSQL(ID_1562, ID_DAMAGEPLACE) {
   const SetId_JOb = await global.con_mssql.select(
     SqlSelect.MS.getJob.replace("?", ID_DAMAGEPLACE).replace("?", name_system)
   ); //`select id_connect FROM [dbo].[fnSelectJobs](${ID_DAMAGEPLACE},'${name_system}');`
-  const ID_JOb = SetId_JOb.length == 0 ? 0 : SetId_JOb.recordsets[0].id_connect;
+  const ID_JOb =
+    SetId_JOb.length === 0 ? 0 : SetId_JOb.recordsets[0].id_connect;
   return ID_JOb;
 }
 
@@ -52,7 +54,6 @@ function prepareTimes(STARTDATE, ENDDATE) {
 
 // index.js
 async function getData() {
-  this.logger = createLocalLogger("main");
   logger.info("Start");
 
   // Инициализация соединений

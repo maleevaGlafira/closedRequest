@@ -6,4 +6,3 @@ enabled = true
 
   [analyzers.meta]
   environment = ["node", "es6"]
-  dialect = "default"

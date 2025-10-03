@@ -125,6 +125,7 @@ class FirebirdDB {
               return reject(err);
             }
             resolve(result);
+            return;
           });
         });
       });
@@ -150,6 +151,7 @@ class FirebirdDB {
               return reject(err);
             }
             resolve(result);
+            return;
           });
         });
       });

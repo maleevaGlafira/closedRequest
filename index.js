@@ -104,7 +104,7 @@ async function getData() {
   });
 
   rl.questionAsync("Press key to stop").then((result) => {
-    console.log("Finish---", result);
+    console.log(`Finish---${result}`);
     stop = true;
     rl.close();
   });
@@ -133,8 +133,8 @@ async function Write() {
 
   try {
     const selectResult = await db.executeSelect(SqlSelect.Fb.getData);
-    console.log("--Receive from =" + selectResult.length);
-    logger.info("--Receive from =" + selectResult.length);
+    console.log(`--Receive from =${selectResult.length}`);
+    logger.info(`--Receive from =${selectResult.length}`);
     let count = 0;
     const maxLen =
       selectResult.length > MAX_Count ? MAX_Count : selectResult.length;
@@ -192,7 +192,7 @@ async function Write() {
         return; // Прекращаем обработку при любой ошибке, ждем следующего цикла
       }
     }
-    logger.info("--Updated = " + count);
+    logger.info(`--Updated =   ${count}`);
   } catch (error) {
     logger.error(`Error in Write: ${error.message}\n${error.stack}`);
     // Не прерываем цикл, ждем следующего интервала

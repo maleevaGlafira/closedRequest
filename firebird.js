@@ -16,9 +16,10 @@ class FirebirdDB {
 
   // Функция для проверки подключения
   async testPoolConnection() {
+    let db = null;
     try {
       // Получаем соединение из пула
-      const db = await new Promise((resolve, reject) => {
+      db = await new Promise((resolve, reject) => {
         this.pool.get((errGet, connection) => {
           if (errGet) {
             reject(errGet);
@@ -32,7 +33,7 @@ class FirebirdDB {
       const result = await new Promise((resolve, reject) => {
         db.query("SELECT 1 FROM RDB$DATABASE", (errTest, res) => {
           if (errTest) {
-            reject(err);
+            reject(errTest);
           } else {
             resolve(res);
           }
@@ -112,15 +113,15 @@ class FirebirdDB {
     }
     try {
       return await new Promise((resolve, reject) => {
-        this.pool.get((err, db) => {
+        this.pool.get((errGet, db) => {
           if (err) {
             this.isConnected = false;
-            return reject(err);
+            return reject(errGet);
           }
-          db.query(sql, params, (err, result) => {
+          db.query(sql, params, (errIns, result) => {
             if (err) {
               this.isConnected = false;
-              return reject(err);
+              return reject(errIns);
             }
             db.detach();
             resolve(result);
